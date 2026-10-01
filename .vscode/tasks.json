@@ -1,0 +1,30 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Compiler l'APK (debug)",
+            "type": "shell",
+            "command": "./gradlew",
+            "args": ["assembleDebug"],
+            "windows": { "command": ".\\gradlew.bat" },
+            "group": { "kind": "build", "isDefault": true },
+            "problemMatcher": []
+        },
+        {
+            "label": "Installer sur l'appareil branché (adb)",
+            "type": "shell",
+            "command": "./gradlew",
+            "args": ["installDebug"],
+            "windows": { "command": ".\\gradlew.bat" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Nettoyer le projet",
+            "type": "shell",
+            "command": "./gradlew",
+            "args": ["clean"],
+            "windows": { "command": ".\\gradlew.bat" },
+            "problemMatcher": []
+        }
+    ]
+}

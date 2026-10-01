@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Dead Man\'s Switch by YOR"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:paddingBottom="4dp" />
+
+        <TextView
+            android:id="@+id/statusView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Inactif"
+            android:paddingBottom="12dp"
+            android:textStyle="italic" />
+
+        <TextView style="@style/Label" android:text="Méthode d'envoi" />
+        <RadioGroup
+            android:id="@+id/methodGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <RadioButton android:id="@+id/radioEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="E-mail" android:checked="true" />
+            <RadioButton android:id="@+id/radioSms"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SMS"
+                android:layout_marginStart="16dp" />
+        </RadioGroup>
+
+        <TextView style="@style/Label" android:text="Destinataire (e-mail ou numéro)" />
+        <EditText android:id="@+id/recipient"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+            android:hint="destinataire@exemple.com" />
+
+        <TextView style="@style/Label" android:text="Objet (e-mail)" />
+        <EditText android:id="@+id/subject"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:hint="Objet du message" />
+
+        <TextView style="@style/Label" android:text="Message (texte / lien)" />
+        <EditText android:id="@+id/messageText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minLines="3"
+            android:gravity="top"
+            android:inputType="textMultiLine"
+            android:hint="Votre message, un lien, etc." />
+
+        <Button android:id="@+id/pickPhoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Choisir une photo (e-mail)" />
+        <TextView android:id="@+id/photoLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Aucune photo"
+            android:textSize="12sp" />
+
+        <TextView style="@style/Label" android:text="Intervalle entre les relances (minutes)" />
+        <EditText android:id="@+id/interval"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:text="1440" />
+
+        <TextView style="@style/Label" android:text="Délai pour valider avant envoi (minutes)" />
+        <EditText android:id="@+id/grace"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:text="360" />
+
+        <LinearLayout android:id="@+id/smtpBlock"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView style="@style/Label" android:text="Serveur SMTP" />
+            <EditText android:id="@+id/smtpHost"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textUri"
+                android:text="smtp.gmail.com" />
+
+            <TextView style="@style/Label" android:text="Port SMTP (587 = TLS, 465 = SSL)" />
+            <EditText android:id="@+id/smtpPort"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:text="587" />
+
+            <TextView style="@style/Label" android:text="Identifiant SMTP (votre e-mail)" />
+            <EditText android:id="@+id/smtpUser"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:hint="vous@gmail.com" />
+
+            <TextView style="@style/Label" android:text="Mot de passe d'application SMTP" />
+            <EditText android:id="@+id/smtpPass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:hint="mot de passe d'application" />
+        </LinearLayout>
+
+        <Button android:id="@+id/saveBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Enregistrer" />
+
+        <Button android:id="@+id/toggleBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Activer la veille" />
+
+        <Button android:id="@+id/testBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Tester l'envoi maintenant" />
+
+    </LinearLayout>
+</ScrollView>
