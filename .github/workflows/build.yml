@@ -34,5 +34,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dead-mans-switch-by-yor-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/debug/dead-mans-switch-by-yor.apk
           if-no-files-found: error

@@ -42,6 +42,9 @@ android {
             ]
         }
     }
+    // Nomme le fichier APK généré "dead-mans-switch-by-yor.apk"
+    applicationVariants.all { variant -> variant.outputs.all { output -> output.outputFileName = "dead-mans-switch-by-yor.apk"}
+    }
 }
 
 dependencies {

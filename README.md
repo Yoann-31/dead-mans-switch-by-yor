@@ -38,6 +38,9 @@ configuré, par **e-mail (SMTP)** ou par **SMS**.
   - L'onglet Actions compilera l'APK tout seul.
   - Après que le build ait réussi, en bas de la apge, l'APK est disponible pour être télépchargée.
 
+    ## YOR => Envoyé les prochaines modifications vers GitHub : 
+    git push --force origin main
+
 
 ## 1. Obtenir le fichier .apk
 
