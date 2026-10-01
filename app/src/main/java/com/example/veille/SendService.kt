@@ -29,8 +29,21 @@ class SendService : Service() {
             .setOngoing(true)
             .build()
 
+        val hasLocation = androidx.core.content.ContextCompat.checkSelfPermission(
+            this, android.Manifest.permission.ACCESS_FINE_LOCATION
+        ) == android.content.pm.PackageManager.PERMISSION_GRANTED ||
+            androidx.core.content.ContextCompat.checkSelfPermission(
+                this, android.Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            startForeground(3001, notif, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+            val type = if (hasLocation)
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE or ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
+            else
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+            startForeground(3001, notif, type)
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && hasLocation) {
+            startForeground(3001, notif, ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION)
         } else {
             startForeground(3001, notif)
         }

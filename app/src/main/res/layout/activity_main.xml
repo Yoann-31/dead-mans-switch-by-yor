@@ -57,15 +57,17 @@
             android:orientation="vertical"
             android:gravity="center">
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/powerBtn"
                 android:layout_width="240dp"
                 android:layout_height="240dp"
                 android:background="@drawable/circle_off"
+                android:backgroundTint="@null"
                 android:text="INACTIVE"
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 android:textStyle="bold"
+                android:stateListAnimator="@null"
                 android:elevation="12dp" />
 
             <TextView
@@ -76,6 +78,16 @@
                 android:text="Appuyez pour activer la surveillance"
                 android:textColor="@color/text_muted"
                 android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/validateBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                android:text="✓ Je suis là — valider ma présence"
+                android:visibility="gone" />
         </LinearLayout>
 
         <!-- Carte d'état en bas -->

@@ -62,6 +62,11 @@ object Prefs {
         get() = p(this).getBoolean("sendEmail", true)
         set(v) { p(this).edit().putBoolean("sendEmail", v).apply() }
 
+    // Joindre la position GPS au message
+    var Context.attachGps: Boolean
+        get() = p(this).getBoolean("attachGps", true)
+        set(v) { p(this).edit().putBoolean("attachGps", v).apply() }
+
     // --- Destinataires ---
     var Context.recipientSms: String
         get() = p(this).getString("recipientSms", "") ?: ""
@@ -121,4 +126,17 @@ object Prefs {
     var Context.lastStatus: String
         get() = p(this).getString("lastStatus", "") ?: ""
         set(v) { p(this).edit().putString("lastStatus", v).apply() }
+
+    // Dernière position enregistrée lors d'une validation de présence
+    var Context.savedLat: String
+        get() = p(this).getString("savedLat", "") ?: ""
+        set(v) { p(this).edit().putString("savedLat", v).apply() }
+
+    var Context.savedLng: String
+        get() = p(this).getString("savedLng", "") ?: ""
+        set(v) { p(this).edit().putString("savedLng", v).apply() }
+
+    var Context.savedLocAt: Long
+        get() = p(this).getLong("savedLocAt", 0)
+        set(v) { p(this).edit().putLong("savedLocAt", v).apply() }
 }

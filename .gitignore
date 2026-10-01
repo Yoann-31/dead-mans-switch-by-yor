@@ -5,6 +5,7 @@ build/
 *.iml
 .DS_Store
 captures/
+# Clé de signature — NE JAMAIS versionner
 keystore.properties
 *.jks
 *.keystore

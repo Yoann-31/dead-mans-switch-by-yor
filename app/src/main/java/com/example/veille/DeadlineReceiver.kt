@@ -18,6 +18,7 @@ class DeadlineReceiver : BroadcastReceiver() {
         if (!context.awaitingValidation) return
 
         Notifications.cancelCheckIn(context)
+        LocationTrackingService.stop(context)
 
         val svc = Intent(context, SendService::class.java)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

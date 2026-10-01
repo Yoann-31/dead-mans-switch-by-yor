@@ -7,6 +7,9 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
+import java.io.File
+import com.example.veille.Prefs.attachGps
 import com.example.veille.Prefs.enabled
 import com.example.veille.Prefs.graceMinutes
 import com.example.veille.Prefs.intervalMinutes
@@ -28,6 +31,16 @@ import kotlin.concurrent.thread
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var b: ActivitySettingsBinding
+
+    private var cameraUri: Uri? = null
+
+    private val takePhoto =
+        registerForActivityResult(ActivityResultContracts.TakePicture()) { ok: Boolean ->
+            if (ok && cameraUri != null) {
+                photoUri = cameraUri.toString()
+                b.photoLabel.text = "Photo prise avec l'appareil"
+            }
+        }
 
     private val pickPhoto =
         registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
@@ -62,6 +75,22 @@ class SettingsActivity : AppCompatActivity() {
 
         b.pickPhoto.setOnClickListener { pickPhoto.launch(arrayOf("image/*")) }
 
+        b.takePhotoBtn.setOnClickListener {
+            try {
+                val dir = File(filesDir, "photos").apply { mkdirs() }
+                val f = File(dir, "capture_${System.currentTimeMillis()}.jpg")
+                val uri = FileProvider.getUriForFile(this, "$packageName.fileprovider", f)
+                cameraUri = uri
+                takePhoto.launch(uri)
+            } catch (e: Exception) {
+                Toast.makeText(
+                    this,
+                    "Impossible d'ouvrir l'appareil photo : ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+
         b.saveBtn.setOnClickListener {
             saveFromUi()
             Toast.makeText(this, "Configuration enregistrée", Toast.LENGTH_SHORT).show()
@@ -89,6 +118,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun loadIntoUi() {
         b.switchSms.isChecked = sendSms
         b.switchEmail.isChecked = sendEmail
+        b.switchGps.isChecked = attachGps
         b.recipientSms.setText(recipientSms)
         b.recipientEmail.setText(recipientEmail)
         b.subject.setText(subject)
@@ -105,6 +135,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun saveFromUi() {
         sendSms = b.switchSms.isChecked
         sendEmail = b.switchEmail.isChecked
+        attachGps = b.switchGps.isChecked
         recipientSms = b.recipientSms.text.toString().trim()
         recipientEmail = b.recipientEmail.text.toString().trim()
         subject = b.subject.text.toString().trim().ifEmpty { "Message important" }

@@ -43,8 +43,16 @@ configuré, par **e-mail (SMTP)** ou par **SMS**.
 
     ## OU : 
     git add .
-    git commit -m "Renommer l'APK en dead-mans-switch-by-yor.apk"
+    git commit -m "<ICI le texte du COMMIT>"
     git push
+    ==> exemple : 
+        git add .
+        git commit -m "Prise de photo par appareil photo + permission caméra (v1.5)"
+        git push
+
+
+
+## MOT DE PASSE (Key encodée) = dead-mans-switch-by-yor
 
 
 ## 1. Obtenir le fichier .apk

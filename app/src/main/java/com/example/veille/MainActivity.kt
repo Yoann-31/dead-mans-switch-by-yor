@@ -7,10 +7,12 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.example.veille.Prefs.awaitingValidation
 import com.example.veille.Prefs.deadlineAt
 import com.example.veille.Prefs.enabled
 import com.example.veille.Prefs.graceMinutes
@@ -45,6 +47,12 @@ class MainActivity : AppCompatActivity() {
 
         b.powerBtn.setOnClickListener { toggleSurveillance() }
 
+        b.validateBtn.setOnClickListener {
+            Validator.validatePresence(this)
+            Toast.makeText(this, "Présence validée", Toast.LENGTH_SHORT).show()
+            refreshUi()
+        }
+
         b.settingsBtn.setOnClickListener {
             if (enabled) {
                 Toast.makeText(
@@ -74,6 +82,14 @@ class MainActivity : AppCompatActivity() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
             != PackageManager.PERMISSION_GRANTED) {
             need += Manifest.permission.SEND_SMS
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
+            need += Manifest.permission.ACCESS_FINE_LOCATION
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+            != PackageManager.PERMISSION_GRANTED) {
+            need += Manifest.permission.CAMERA
         }
         if (need.isNotEmpty()) requestPerms.launch(need.toTypedArray())
     }
@@ -160,11 +176,19 @@ class MainActivity : AppCompatActivity() {
         b.settingsBtn.isEnabled = !active
         b.settingsBtn.alpha = if (active) 0.3f else 1f
 
+        // Bouton de validation : visible quand une validation est en attente
+        val awaiting = active && awaitingValidation
+        b.validateBtn.visibility = if (awaiting) View.VISIBLE else View.GONE
+
         val fmt = SimpleDateFormat("dd/MM 'à' HH:mm", Locale.getDefault())
         if (active) {
-            b.statusLine.text = "● Surveillance active"
+            b.statusLine.text = if (awaiting) "⚠ Validation requise" else "● Surveillance active"
             val sb = StringBuilder()
-            if (nextCheckInAt > 0) sb.append("Prochaine relance : ${fmt.format(Date(nextCheckInAt))}\n")
+            if (awaiting && deadlineAt > 0) {
+                sb.append("Validez avant ${fmt.format(Date(deadlineAt))}\n")
+            } else if (nextCheckInAt > 0) {
+                sb.append("Prochaine relance : ${fmt.format(Date(nextCheckInAt))}\n")
+            }
             sb.append(channelsSummary())
             b.statusDetail.text = sb.toString().trim()
         } else {

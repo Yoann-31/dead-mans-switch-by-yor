@@ -46,6 +46,14 @@
                 android:text="Envoyer par e-mail"
                 android:textColor="@color/text_primary"
                 android:layout_marginTop="6dp" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switchGps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Joindre la position GPS"
+                android:textColor="@color/text_primary"
+                android:layout_marginTop="6dp" />
         </LinearLayout>
 
         <!-- Carte : SMS -->
@@ -58,9 +66,10 @@
             android:padding="16dp"
             android:layout_marginTop="12dp">
 
-            <TextView style="@style/Label" android:text="Destinataire SMS (numéro)" android:paddingTop="0dp" />
+            <TextView style="@style/Label" android:text="Destinataires SMS (séparés par des virgules)" android:paddingTop="0dp" />
             <EditText android:id="@+id/recipientSms" style="@style/Field"
-                android:inputType="phone" android:hint="+33 6 12 34 56 78" />
+                android:inputType="textMultiLine" android:minLines="1"
+                android:hint="+33612345678, +33698765432" />
         </LinearLayout>
 
         <!-- Carte : e-mail -->
@@ -73,19 +82,32 @@
             android:padding="16dp"
             android:layout_marginTop="12dp">
 
-            <TextView style="@style/Label" android:text="Destinataire e-mail" android:paddingTop="0dp" />
+            <TextView style="@style/Label" android:text="Destinataires e-mail (séparés par des virgules)" android:paddingTop="0dp" />
             <EditText android:id="@+id/recipientEmail" style="@style/Field"
-                android:inputType="textEmailAddress" android:hint="destinataire@exemple.com" />
+                android:inputType="textMultiLine|textEmailAddress" android:minLines="1"
+                android:hint="a@exemple.com, b@exemple.com" />
 
             <TextView style="@style/Label" android:text="Objet" />
             <EditText android:id="@+id/subject" style="@style/Field"
                 android:inputType="text" android:hint="Objet du message" />
 
-            <Button android:id="@+id/pickPhoto"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="Choisir une photo" />
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp">
+                <Button android:id="@+id/pickPhoto"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Galerie" />
+                <Button android:id="@+id/takePhotoBtn"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Appareil photo" />
+            </LinearLayout>
             <TextView android:id="@+id/photoLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

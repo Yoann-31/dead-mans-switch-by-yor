@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+// Charge la configuration de signature si keystore.properties existe (jamais versionné)
 def keystorePropsFile = rootProject.file("keystore.properties")
 def keystoreProps = new Properties()
 if (keystorePropsFile.exists()) {
@@ -17,8 +18,8 @@ android {
         applicationId "com.example.veille"
         minSdk 26
         targetSdk 34
-        versionCode 1
-        versionName "1.0"
+        versionCode 6
+        versionName "1.5"
     }
 
     signingConfigs {
@@ -31,7 +32,6 @@ android {
             }
         }
     }
-    
     buildTypes {
         release {
             if (keystorePropsFile.exists()) {
@@ -62,8 +62,12 @@ android {
             ]
         }
     }
+
     // Nomme le fichier APK généré "dead-mans-switch-by-yor.apk"
-    applicationVariants.all { variant -> variant.outputs.all { output -> output.outputFileName = "dead-mans-switch-by-yor.apk"}
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            output.outputFileName = "dead-mans-switch-by-yor.apk"
+        }
     }
 }
 

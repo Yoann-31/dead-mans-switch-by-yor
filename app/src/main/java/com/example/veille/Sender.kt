@@ -3,6 +3,7 @@ package com.example.veille
 import android.content.Context
 import android.net.Uri
 import android.telephony.SmsManager
+import com.example.veille.Prefs.attachGps
 import com.example.veille.Prefs.messageText
 import com.example.veille.Prefs.photoUri
 import com.example.veille.Prefs.recipientEmail
@@ -28,23 +29,40 @@ import javax.mail.internet.MimeMultipart
 import javax.mail.util.ByteArrayDataSource
 
 /**
- * Effectue l'envoi sur les canaux activés (SMS et/ou e-mail).
- * Retourne un récapitulatif lisible.
+ * Envoi sur les canaux activés (SMS et/ou e-mail), avec destinataires
+ * multiples et, en option, la position GPS jointe au message.
  */
 object Sender {
 
+    /** Découpe une saisie en plusieurs destinataires (séparés par , ; ou retour ligne). */
+    private fun parseRecipients(raw: String): List<String> =
+        raw.split(Regex("[,;\\n\\r]"))
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+
+    private fun buildBody(ctx: Context): String {
+        // 1) tentative d'une position fraîche (max 15 s) ; 2) sinon position figée à la
+        // validation ; 3) sinon dernière position connue.
+        val gps = if (ctx.attachGps) {
+            Locator.getFreshLink(ctx, 15_000L)
+                ?: Locator.savedLink(ctx)
+                ?: Locator.getLocationLink(ctx)
+        } else null
+        return if (gps != null) ctx.messageText + "\n\nPosition : " + gps else ctx.messageText
+    }
+
     fun send(ctx: Context): String {
+        val body = buildBody(ctx)
         val results = mutableListOf<String>()
-        if (ctx.sendSms) results += sendSms(ctx)
-        if (ctx.sendEmail) results += sendEmail(ctx)
+        if (ctx.sendSms) results += sendSms(ctx, body)
+        if (ctx.sendEmail) results += sendEmail(ctx, body)
         if (results.isEmpty()) return "Aucun canal d'envoi activé."
         return results.joinToString("\n")
     }
 
-    private fun sendSms(ctx: Context): String {
-        val to = ctx.recipientSms.trim()
-        val body = ctx.messageText
-        if (to.isEmpty()) return "SMS : aucun numéro de destinataire."
+    private fun sendSms(ctx: Context, body: String): String {
+        val tos = parseRecipients(ctx.recipientSms)
+        if (tos.isEmpty()) return "SMS : aucun numéro de destinataire."
         return try {
             val sms = if (android.os.Build.VERSION.SDK_INT >= 31) {
                 ctx.getSystemService(SmsManager::class.java)
@@ -52,17 +70,27 @@ object Sender {
                 @Suppress("DEPRECATION")
                 SmsManager.getDefault()
             }
-            val parts = sms.divideMessage(body)
-            sms.sendMultipartTextMessage(to, null, parts, null, null)
-            "SMS envoyé à $to"
+            var ok = 0
+            val errors = mutableListOf<String>()
+            for (to in tos) {
+                try {
+                    val parts = sms.divideMessage(body)
+                    sms.sendMultipartTextMessage(to, null, parts, null, null)
+                    ok++
+                } catch (e: Exception) {
+                    errors.add("$to (${e.message})")
+                }
+            }
+            val base = "SMS envoyé à $ok/${tos.size} destinataire(s)"
+            if (errors.isEmpty()) base else "$base — échecs : ${errors.joinToString(", ")}"
         } catch (e: Exception) {
             "Échec SMS : ${e.message}"
         }
     }
 
-    private fun sendEmail(ctx: Context): String {
-        val to = ctx.recipientEmail.trim()
-        if (to.isEmpty()) return "E-mail : aucune adresse destinataire."
+    private fun sendEmail(ctx: Context, body: String): String {
+        val tos = parseRecipients(ctx.recipientEmail)
+        if (tos.isEmpty()) return "E-mail : aucune adresse destinataire."
         val user = ctx.smtpUser.trim()
         val pass = ctx.smtpPass
         val host = ctx.smtpHost.trim()
@@ -92,11 +120,13 @@ object Sender {
 
             val msg = MimeMessage(session).apply {
                 setFrom(InternetAddress(user))
-                addRecipient(Message.RecipientType.TO, InternetAddress(to))
+                for (to in tos) {
+                    addRecipient(Message.RecipientType.TO, InternetAddress(to))
+                }
                 subject = ctx.subject
             }
 
-            val textPart = MimeBodyPart().apply { setText(ctx.messageText, "utf-8") }
+            val textPart = MimeBodyPart().apply { setText(body, "utf-8") }
             val multipart = MimeMultipart().apply { addBodyPart(textPart) }
 
             val uriStr = ctx.photoUri
@@ -117,7 +147,7 @@ object Sender {
 
             msg.setContent(multipart)
             Transport.send(msg)
-            "E-mail envoyé à $to"
+            "E-mail envoyé à ${tos.size} destinataire(s)"
         } catch (e: Exception) {
             "Échec e-mail : ${e.message}"
         }
