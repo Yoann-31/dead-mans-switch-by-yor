@@ -47,7 +47,7 @@ configuré, par **e-mail (SMTP)** ou par **SMS**.
     git push
     ==> exemple : 
         git add .
-        git commit -m "Prise de photo par appareil photo + permission caméra (v1.5)"
+        git commit -m "Modification unité de temps (v1.7)"
         git push
 
 

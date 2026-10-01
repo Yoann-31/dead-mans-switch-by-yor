@@ -9,11 +9,16 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import java.io.File
+import android.widget.ArrayAdapter
 import com.example.veille.Prefs.attachGps
 import com.example.veille.Prefs.enabled
-import com.example.veille.Prefs.graceMinutes
+import com.example.veille.Prefs.intervalAmount
 import com.example.veille.Prefs.intervalMinutes
+import com.example.veille.Prefs.intervalUnit
 import com.example.veille.Prefs.lastStatus
+import com.example.veille.Prefs.sendDelayAmount
+import com.example.veille.Prefs.sendDelayMinutes
+import com.example.veille.Prefs.sendDelayUnit
 import com.example.veille.Prefs.messageText
 import com.example.veille.Prefs.photoUri
 import com.example.veille.Prefs.recipientEmail
@@ -67,6 +72,7 @@ class SettingsActivity : AppCompatActivity() {
             return
         }
 
+        setupUnitSpinners()
         loadIntoUi()
 
         b.switchSms.setOnCheckedChangeListener { _, _ -> updateVisibility() }
@@ -110,6 +116,25 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    private val unitCodes = listOf("min", "h", "j")
+    private val unitLabels = listOf("Minutes", "Heures", "Jours")
+
+    private fun unitFactor(code: String): Long = when (code) {
+        "h" -> 60L
+        "j" -> 1440L
+        else -> 1L
+    }
+
+    private fun setupUnitSpinners() {
+        val a1 = ArrayAdapter(this, android.R.layout.simple_spinner_item, unitLabels)
+        a1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        b.intervalUnit.adapter = a1
+
+        val a2 = ArrayAdapter(this, android.R.layout.simple_spinner_item, unitLabels)
+        a2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        b.sendDelayUnit.adapter = a2
+    }
+
     private fun updateVisibility() {
         b.smsBlock.visibility = if (b.switchSms.isChecked) View.VISIBLE else View.GONE
         b.emailBlock.visibility = if (b.switchEmail.isChecked) View.VISIBLE else View.GONE
@@ -123,8 +148,10 @@ class SettingsActivity : AppCompatActivity() {
         b.recipientEmail.setText(recipientEmail)
         b.subject.setText(subject)
         b.messageText.setText(messageText)
-        b.interval.setText(intervalMinutes.toString())
-        b.grace.setText(graceMinutes.toString())
+        b.interval.setText(intervalAmount.toString())
+        b.intervalUnit.setSelection(unitCodes.indexOf(intervalUnit).coerceAtLeast(0))
+        b.sendDelay.setText(sendDelayAmount.toString())
+        b.sendDelayUnit.setSelection(unitCodes.indexOf(sendDelayUnit).coerceAtLeast(0))
         b.smtpHost.setText(smtpHost)
         b.smtpPort.setText(smtpPort.toString())
         b.smtpUser.setText(smtpUser)
@@ -140,8 +167,19 @@ class SettingsActivity : AppCompatActivity() {
         recipientEmail = b.recipientEmail.text.toString().trim()
         subject = b.subject.text.toString().trim().ifEmpty { "Message important" }
         messageText = b.messageText.text.toString()
-        intervalMinutes = b.interval.text.toString().toLongOrNull()?.coerceAtLeast(1) ?: 1440
-        graceMinutes = b.grace.text.toString().toLongOrNull()?.coerceAtLeast(1) ?: 360
+
+        val iAmt = b.interval.text.toString().toIntOrNull()?.coerceAtLeast(1) ?: 1
+        val iUnit = unitCodes[b.intervalUnit.selectedItemPosition]
+        intervalAmount = iAmt
+        intervalUnit = iUnit
+        intervalMinutes = iAmt.toLong() * unitFactor(iUnit)
+
+        val sAmt = b.sendDelay.text.toString().toIntOrNull()?.coerceAtLeast(1) ?: 1
+        val sUnit = unitCodes[b.sendDelayUnit.selectedItemPosition]
+        sendDelayAmount = sAmt
+        sendDelayUnit = sUnit
+        sendDelayMinutes = sAmt.toLong() * unitFactor(sUnit)
+
         smtpHost = b.smtpHost.text.toString().trim()
         smtpPort = b.smtpPort.text.toString().toIntOrNull() ?: 587
         smtpUser = b.smtpUser.text.toString().trim()

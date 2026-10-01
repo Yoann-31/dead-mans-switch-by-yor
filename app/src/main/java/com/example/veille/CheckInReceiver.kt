@@ -6,13 +6,13 @@ import android.content.Intent
 import com.example.veille.Prefs.enabled
 
 /**
- * Se déclenche à chaque intervalle : ouvre le délai de grâce
- * et affiche la notification de validation.
+ * Rappel récurrent : affiche la notification de présence puis reprogramme
+ * le rappel suivant. L'échéance d'envoi est gérée séparément (DeadlineReceiver).
  */
 class CheckInReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
         if (!context.enabled) return
-        Scheduler.scheduleDeadline(context)
         Notifications.showCheckIn(context)
+        Scheduler.armNextReminder(context, System.currentTimeMillis())
     }
 }

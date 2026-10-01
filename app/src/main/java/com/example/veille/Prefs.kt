@@ -44,14 +44,32 @@ object Prefs {
         get() = p(this).getBoolean("enabled", false)
         set(v) { p(this).edit().putBoolean("enabled", v).apply() }
 
-    // --- Intervalles (en minutes) ---
+    // --- Récurrence des notifications (valeur canonique en minutes) ---
     var Context.intervalMinutes: Long
-        get() = p(this).getLong("intervalMinutes", 24 * 60)
+        get() = p(this).getLong("intervalMinutes", 60) // défaut : 1 h
         set(v) { p(this).edit().putLong("intervalMinutes", v).apply() }
 
-    var Context.graceMinutes: Long
-        get() = p(this).getLong("graceMinutes", 6 * 60)
-        set(v) { p(this).edit().putLong("graceMinutes", v).apply() }
+    // --- Temps d'absence avant envoi (valeur canonique en minutes) ---
+    var Context.sendDelayMinutes: Long
+        get() = p(this).getLong("sendDelayMinutes", 24 * 60) // défaut : 24 h
+        set(v) { p(this).edit().putLong("sendDelayMinutes", v).apply() }
+
+    // --- Saisie utilisateur : quantité + unité (min / h / j) pour l'affichage ---
+    var Context.intervalAmount: Int
+        get() = p(this).getInt("intervalAmount", 1)
+        set(v) { p(this).edit().putInt("intervalAmount", v).apply() }
+
+    var Context.intervalUnit: String
+        get() = p(this).getString("intervalUnit", "h") ?: "h"
+        set(v) { p(this).edit().putString("intervalUnit", v).apply() }
+
+    var Context.sendDelayAmount: Int
+        get() = p(this).getInt("sendDelayAmount", 24)
+        set(v) { p(this).edit().putInt("sendDelayAmount", v).apply() }
+
+    var Context.sendDelayUnit: String
+        get() = p(this).getString("sendDelayUnit", "h") ?: "h"
+        set(v) { p(this).edit().putString("sendDelayUnit", v).apply() }
 
     // --- Canaux d'envoi (indépendants : SMS, e-mail, ou les deux) ---
     var Context.sendSms: Boolean

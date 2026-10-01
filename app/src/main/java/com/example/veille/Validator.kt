@@ -19,13 +19,13 @@ object Validator {
         // Fige la position GPS au moment où l'utilisateur confirme sa présence
         Locator.saveCurrent(ctx)
 
-        Scheduler.cancelDeadline(ctx)
         Notifications.cancelCheckIn(ctx)
         ctx.lastValidatedAt = System.currentTimeMillis()
         ctx.lastStatus = "Présence validée"
 
         if (ctx.enabled) {
-            Scheduler.scheduleNextCheckIn(ctx)
+            // Réinitialise le compte à rebours d'envoi et le prochain rappel (option A)
+            Scheduler.onValidated(ctx)
         }
     }
 }

@@ -146,13 +146,37 @@
                 android:minLines="3" android:gravity="top"
                 android:inputType="textMultiLine" android:hint="Votre message, un lien, etc." />
 
-            <TextView style="@style/Label" android:text="Intervalle entre les relances (minutes)" />
-            <EditText android:id="@+id/interval" style="@style/Field"
-                android:inputType="number" android:text="1440" />
+            <TextView style="@style/Label" android:text="Récurrence des notifications" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <EditText android:id="@+id/interval" style="@style/Field"
+                    android:layout_width="0dp" android:layout_weight="1"
+                    android:inputType="number" android:text="1" />
+                <Spinner android:id="@+id/intervalUnit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="120dp"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
 
-            <TextView style="@style/Label" android:text="Délai pour valider avant envoi (minutes)" />
-            <EditText android:id="@+id/grace" style="@style/Field"
-                android:inputType="number" android:text="360" />
+            <TextView style="@style/Label" android:text="Temps d'absence avant envoi" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <EditText android:id="@+id/sendDelay" style="@style/Field"
+                    android:layout_width="0dp" android:layout_weight="1"
+                    android:inputType="number" android:text="24" />
+                <Spinner android:id="@+id/sendDelayUnit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="120dp"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
         </LinearLayout>
 
         <Button android:id="@+id/saveBtn"

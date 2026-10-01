@@ -12,11 +12,8 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.example.veille.Prefs.awaitingValidation
 import com.example.veille.Prefs.deadlineAt
 import com.example.veille.Prefs.enabled
-import com.example.veille.Prefs.graceMinutes
-import com.example.veille.Prefs.intervalMinutes
 import com.example.veille.Prefs.lastStatus
 import com.example.veille.Prefs.messageText
 import com.example.veille.Prefs.nextCheckInAt
@@ -112,7 +109,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         enabled = true
-        Scheduler.scheduleNextCheckIn(this)
+        Scheduler.start(this)
         lastStatus = "Surveillance activée"
         refreshUi()
     }
@@ -176,19 +173,15 @@ class MainActivity : AppCompatActivity() {
         b.settingsBtn.isEnabled = !active
         b.settingsBtn.alpha = if (active) 0.3f else 1f
 
-        // Bouton de validation : visible quand une validation est en attente
-        val awaiting = active && awaitingValidation
-        b.validateBtn.visibility = if (awaiting) View.VISIBLE else View.GONE
+        // Bouton de validation : disponible dès que la surveillance est active
+        b.validateBtn.visibility = if (active) View.VISIBLE else View.GONE
 
         val fmt = SimpleDateFormat("dd/MM 'à' HH:mm", Locale.getDefault())
         if (active) {
-            b.statusLine.text = if (awaiting) "⚠ Validation requise" else "● Surveillance active"
+            b.statusLine.text = "● Surveillance active"
             val sb = StringBuilder()
-            if (awaiting && deadlineAt > 0) {
-                sb.append("Validez avant ${fmt.format(Date(deadlineAt))}\n")
-            } else if (nextCheckInAt > 0) {
-                sb.append("Prochaine relance : ${fmt.format(Date(nextCheckInAt))}\n")
-            }
+            if (deadlineAt > 0) sb.append("Envoi si absence avant ${fmt.format(Date(deadlineAt))}\n")
+            if (nextCheckInAt > 0) sb.append("Prochain rappel : ${fmt.format(Date(nextCheckInAt))}\n")
             sb.append(channelsSummary())
             b.statusDetail.text = sb.toString().trim()
         } else {
