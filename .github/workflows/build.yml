@@ -18,8 +18,11 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Préparer le SDK Android
-        uses: android-actions/setup-android@v3
+      - name: Préparer les composants du SDK (au besoin)
+        continue-on-error: true   # le SDK est déjà préinstallé ; cette étape ne fait que compléter
+        run: |
+          yes | sdkmanager --licenses >/dev/null 2>&1 || true
+          sdkmanager "platforms;android-34" "build-tools;34.0.0" "platform-tools" || true
 
       - name: Rendre gradlew exécutable
         run: chmod +x ./gradlew

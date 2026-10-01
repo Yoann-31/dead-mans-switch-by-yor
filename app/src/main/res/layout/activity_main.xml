@@ -1,147 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:padding="16dp">
+    android:background="@drawable/bg_gradient">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <!-- Barre du haut : titre + roue crantée -->
+    <TextView
+        android:id="@+id/appTitle"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:text="Dead Man's Switch"
+        android:textColor="@color/text_primary"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:paddingStart="20dp"
+        android:paddingTop="20dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/settingsBtn" />
+
+    <ImageButton
+        android:id="@+id/settingsBtn"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="12dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_gear"
+        android:contentDescription="Réglages"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Sous-titre YOR -->
+    <TextView
+        android:id="@+id/subTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="by YOR"
+        android:textColor="@color/text_muted"
+        android:textSize="13sp"
+        android:paddingStart="20dp"
+        app:layout_constraintTop_toBottomOf="@id/appTitle"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Grand bouton rond central -->
+    <Button
+        android:id="@+id/powerBtn"
+        android:layout_width="240dp"
+        android:layout_height="240dp"
+        android:background="@drawable/circle_off"
+        android:text="INACTIVE"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:elevation="12dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="0.38" />
+
+    <TextView
+        android:id="@+id/hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Appuyez pour activer la surveillance"
+        android:textColor="@color/text_muted"
+        android:textSize="14sp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@id/powerBtn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Carte d'état en bas -->
+    <LinearLayout
+        android:id="@+id/statusCard"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/card_bg"
+        android:padding="18dp"
+        android:layout_margin="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <TextView
+            android:id="@+id/statusLine"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Dead Man\'s Switch by YOR"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:paddingBottom="4dp" />
+            android:text="Surveillance inactive"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp"
+            android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/statusView"
+            android:id="@+id/statusDetail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Inactif"
-            android:paddingBottom="12dp"
-            android:textStyle="italic" />
-
-        <TextView style="@style/Label" android:text="Méthode d'envoi" />
-        <RadioGroup
-            android:id="@+id/methodGroup"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <RadioButton android:id="@+id/radioEmail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="E-mail" android:checked="true" />
-            <RadioButton android:id="@+id/radioSms"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="SMS"
-                android:layout_marginStart="16dp" />
-        </RadioGroup>
-
-        <TextView style="@style/Label" android:text="Destinataire (e-mail ou numéro)" />
-        <EditText android:id="@+id/recipient"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textEmailAddress"
-            android:hint="destinataire@exemple.com" />
-
-        <TextView style="@style/Label" android:text="Objet (e-mail)" />
-        <EditText android:id="@+id/subject"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text"
-            android:hint="Objet du message" />
-
-        <TextView style="@style/Label" android:text="Message (texte / lien)" />
-        <EditText android:id="@+id/messageText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minLines="3"
-            android:gravity="top"
-            android:inputType="textMultiLine"
-            android:hint="Votre message, un lien, etc." />
-
-        <Button android:id="@+id/pickPhoto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Choisir une photo (e-mail)" />
-        <TextView android:id="@+id/photoLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Aucune photo"
-            android:textSize="12sp" />
-
-        <TextView style="@style/Label" android:text="Intervalle entre les relances (minutes)" />
-        <EditText android:id="@+id/interval"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:text="1440" />
-
-        <TextView style="@style/Label" android:text="Délai pour valider avant envoi (minutes)" />
-        <EditText android:id="@+id/grace"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:text="360" />
-
-        <LinearLayout android:id="@+id/smtpBlock"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView style="@style/Label" android:text="Serveur SMTP" />
-            <EditText android:id="@+id/smtpHost"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textUri"
-                android:text="smtp.gmail.com" />
-
-            <TextView style="@style/Label" android:text="Port SMTP (587 = TLS, 465 = SSL)" />
-            <EditText android:id="@+id/smtpPort"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:text="587" />
-
-            <TextView style="@style/Label" android:text="Identifiant SMTP (votre e-mail)" />
-            <EditText android:id="@+id/smtpUser"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:hint="vous@gmail.com" />
-
-            <TextView style="@style/Label" android:text="Mot de passe d'application SMTP" />
-            <EditText android:id="@+id/smtpPass"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword"
-                android:hint="mot de passe d'application" />
-        </LinearLayout>
-
-        <Button android:id="@+id/saveBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Enregistrer" />
-
-        <Button android:id="@+id/toggleBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Activer la veille" />
-
-        <Button android:id="@+id/testBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Tester l'envoi maintenant" />
-
+            android:layout_marginTop="6dp"
+            android:text="Configurez l'application via la roue en haut à droite."
+            android:textColor="@color/text_muted"
+            android:textSize="13sp" />
     </LinearLayout>
-</ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,19 +1,43 @@
 package com.example.veille
 
 import android.content.Context
+import android.content.SharedPreferences
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 
 /**
- * Stockage local de la configuration (SharedPreferences).
- * Rien ne quitte l'appareil tant que le déclenchement n'a pas lieu.
+ * Stockage local CHIFFRÉ de la configuration.
+ * Les valeurs (y compris le mot de passe SMTP) sont chiffrées au repos
+ * via EncryptedSharedPreferences (clé maître dans le Keystore Android).
+ * En cas d'indisponibilité du chiffrement, repli transparent sur un stockage simple.
  */
 object Prefs {
-    private const val FILE = "veille_config"
 
-    const val METHOD_SMS = "SMS"
-    const val METHOD_EMAIL = "EMAIL"
+    @Volatile private var cached: SharedPreferences? = null
 
-    private fun p(ctx: Context) =
-        ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE)
+    private fun p(ctx: Context): SharedPreferences {
+        cached?.let { return it }
+        synchronized(this) {
+            cached?.let { return it }
+            val c = ctx.applicationContext
+            val sp = try {
+                val mk = MasterKey.Builder(c)
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    .build()
+                EncryptedSharedPreferences.create(
+                    c,
+                    "veille_secure",
+                    mk,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                )
+            } catch (e: Exception) {
+                c.getSharedPreferences("veille_fallback", Context.MODE_PRIVATE)
+            }
+            cached = sp
+            return sp
+        }
+    }
 
     // --- Activation ---
     var Context.enabled: Boolean
@@ -22,22 +46,32 @@ object Prefs {
 
     // --- Intervalles (en minutes) ---
     var Context.intervalMinutes: Long
-        get() = p(this).getLong("intervalMinutes", 24 * 60) // défaut : 1 jour
+        get() = p(this).getLong("intervalMinutes", 24 * 60)
         set(v) { p(this).edit().putLong("intervalMinutes", v).apply() }
 
     var Context.graceMinutes: Long
-        get() = p(this).getLong("graceMinutes", 6 * 60) // défaut : 6 h pour valider
+        get() = p(this).getLong("graceMinutes", 6 * 60)
         set(v) { p(this).edit().putLong("graceMinutes", v).apply() }
 
-    // --- Destinataire et contenu ---
-    var Context.method: String
-        get() = p(this).getString("method", METHOD_EMAIL) ?: METHOD_EMAIL
-        set(v) { p(this).edit().putString("method", v).apply() }
+    // --- Canaux d'envoi (indépendants : SMS, e-mail, ou les deux) ---
+    var Context.sendSms: Boolean
+        get() = p(this).getBoolean("sendSms", false)
+        set(v) { p(this).edit().putBoolean("sendSms", v).apply() }
 
-    var Context.recipient: String
-        get() = p(this).getString("recipient", "") ?: ""
-        set(v) { p(this).edit().putString("recipient", v).apply() }
+    var Context.sendEmail: Boolean
+        get() = p(this).getBoolean("sendEmail", true)
+        set(v) { p(this).edit().putBoolean("sendEmail", v).apply() }
 
+    // --- Destinataires ---
+    var Context.recipientSms: String
+        get() = p(this).getString("recipientSms", "") ?: ""
+        set(v) { p(this).edit().putString("recipientSms", v).apply() }
+
+    var Context.recipientEmail: String
+        get() = p(this).getString("recipientEmail", "") ?: ""
+        set(v) { p(this).edit().putString("recipientEmail", v).apply() }
+
+    // --- Contenu ---
     var Context.messageText: String
         get() = p(this).getString("messageText", "") ?: ""
         set(v) { p(this).edit().putString("messageText", v).apply() }
@@ -50,7 +84,7 @@ object Prefs {
         get() = p(this).getString("photoUri", "") ?: ""
         set(v) { p(this).edit().putString("photoUri", v).apply() }
 
-    // --- Paramètres SMTP (pour l'e-mail) ---
+    // --- Paramètres SMTP (e-mail) ---
     var Context.smtpHost: String
         get() = p(this).getString("smtpHost", "smtp.gmail.com") ?: "smtp.gmail.com"
         set(v) { p(this).edit().putString("smtpHost", v).apply() }

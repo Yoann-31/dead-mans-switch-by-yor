@@ -26,6 +26,18 @@ configuré, par **e-mail (SMTP)** ou par **SMS**.
 
 - Dossier de sortie pour l'APK : app/build/outputs/apk/debug/app-debug.apk
 
+  ## YOR => Première utilisation : Compilation par GitHub : 
+  - Sur GitHub : New repository → nom dead-mans-switch-by-yor → ne rien cocher → Create repository. Laissez la page ouverte (elle affiche l'URL du dépôt).
+  - Dans le terminal VSCode (dans le dossier qui contient gradlew.bat), lancez les commandes, en remplaçant <VOTRE_COMPTE> : 
+      git init
+      git add .
+      git commit -m "Dead Man's Switch by YOR"
+      git branch -M main
+      git remote add origin https://github.com/VOTRE_COMPTE/dead-mans-switch-by-yor.git
+      git push -u origin main
+  - L'onglet Actions compilera l'APK tout seul.
+  - Après que le build ait réussi, en bas de la apge, l'APK est disponible pour être télépchargée.
+
 
 ## 1. Obtenir le fichier .apk
 

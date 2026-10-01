@@ -4,9 +4,11 @@ import android.content.Context
 import android.net.Uri
 import android.telephony.SmsManager
 import com.example.veille.Prefs.messageText
-import com.example.veille.Prefs.method
 import com.example.veille.Prefs.photoUri
-import com.example.veille.Prefs.recipient
+import com.example.veille.Prefs.recipientEmail
+import com.example.veille.Prefs.recipientSms
+import com.example.veille.Prefs.sendEmail
+import com.example.veille.Prefs.sendSms
 import com.example.veille.Prefs.smtpHost
 import com.example.veille.Prefs.smtpPass
 import com.example.veille.Prefs.smtpPort
@@ -26,22 +28,23 @@ import javax.mail.internet.MimeMultipart
 import javax.mail.util.ByteArrayDataSource
 
 /**
- * Réalise l'envoi effectif selon la méthode configurée.
- * Retourne un message d'état lisible.
+ * Effectue l'envoi sur les canaux activés (SMS et/ou e-mail).
+ * Retourne un récapitulatif lisible.
  */
 object Sender {
 
     fun send(ctx: Context): String {
-        return when (ctx.method) {
-            Prefs.METHOD_SMS -> sendSms(ctx)
-            else -> sendEmail(ctx)
-        }
+        val results = mutableListOf<String>()
+        if (ctx.sendSms) results += sendSms(ctx)
+        if (ctx.sendEmail) results += sendEmail(ctx)
+        if (results.isEmpty()) return "Aucun canal d'envoi activé."
+        return results.joinToString("\n")
     }
 
     private fun sendSms(ctx: Context): String {
-        val to = ctx.recipient.trim()
+        val to = ctx.recipientSms.trim()
         val body = ctx.messageText
-        if (to.isEmpty()) return "Échec : aucun numéro de destinataire."
+        if (to.isEmpty()) return "SMS : aucun numéro de destinataire."
         return try {
             val sms = if (android.os.Build.VERSION.SDK_INT >= 31) {
                 ctx.getSystemService(SmsManager::class.java)
@@ -53,19 +56,19 @@ object Sender {
             sms.sendMultipartTextMessage(to, null, parts, null, null)
             "SMS envoyé à $to"
         } catch (e: Exception) {
-            "Échec de l'envoi du SMS : ${e.message}"
+            "Échec SMS : ${e.message}"
         }
     }
 
     private fun sendEmail(ctx: Context): String {
-        val to = ctx.recipient.trim()
-        if (to.isEmpty()) return "Échec : aucune adresse destinataire."
+        val to = ctx.recipientEmail.trim()
+        if (to.isEmpty()) return "E-mail : aucune adresse destinataire."
         val user = ctx.smtpUser.trim()
         val pass = ctx.smtpPass
         val host = ctx.smtpHost.trim()
         val port = ctx.smtpPort
         if (user.isEmpty() || pass.isEmpty() || host.isEmpty()) {
-            return "Échec : paramètres SMTP incomplets."
+            return "E-mail : paramètres SMTP incomplets."
         }
 
         return try {
@@ -93,13 +96,9 @@ object Sender {
                 subject = ctx.subject
             }
 
-            val textPart = MimeBodyPart().apply {
-                setText(ctx.messageText, "utf-8")
-            }
-
+            val textPart = MimeBodyPart().apply { setText(ctx.messageText, "utf-8") }
             val multipart = MimeMultipart().apply { addBodyPart(textPart) }
 
-            // Pièce jointe photo, si configurée
             val uriStr = ctx.photoUri
             if (uriStr.isNotEmpty()) {
                 try {
@@ -113,16 +112,14 @@ object Sender {
                         }
                         multipart.addBodyPart(attach)
                     }
-                } catch (_: Exception) {
-                    // On envoie quand même l'e-mail sans la pièce jointe
-                }
+                } catch (_: Exception) { }
             }
 
             msg.setContent(multipart)
             Transport.send(msg)
             "E-mail envoyé à $to"
         } catch (e: Exception) {
-            "Échec de l'envoi de l'e-mail : ${e.message}"
+            "Échec e-mail : ${e.message}"
         }
     }
 }
