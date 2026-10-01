@@ -3,7 +3,7 @@ name: Build APK
 on:
   push:
     branches: [ main, master ]
-  workflow_dispatch:   # permet de lancer le build manuellement depuis l'onglet Actions
+  workflow_dispatch:
 
 jobs:
   build:
@@ -19,20 +19,39 @@ jobs:
           java-version: '17'
 
       - name: Préparer les composants du SDK (au besoin)
-        continue-on-error: true   # le SDK est déjà préinstallé ; cette étape ne fait que compléter
+        continue-on-error: true
         run: |
           yes | sdkmanager --licenses >/dev/null 2>&1 || true
           sdkmanager "platforms;android-34" "build-tools;34.0.0" "platform-tools" || true
 
+      - name: Restaurer la clé de signature depuis les secrets
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > dead-mans-switch.jks
+          cat > keystore.properties <<EOF
+          storeFile=dead-mans-switch.jks
+          storePassword=$KEYSTORE_PASSWORD
+          keyAlias=$KEY_ALIAS
+          keyPassword=$KEY_PASSWORD
+          EOF
+
       - name: Rendre gradlew exécutable
         run: chmod +x ./gradlew
 
-      - name: Compiler l'APK de debug
-        run: ./gradlew assembleDebug --no-daemon
+      - name: Compiler l'APK release (signé)
+        run: ./gradlew assembleRelease --no-daemon
+
+      - name: Nettoyer les fichiers sensibles
+        if: always()
+        run: rm -f dead-mans-switch.jks keystore.properties
 
       - name: Publier l'APK
         uses: actions/upload-artifact@v4
         with:
           name: dead-mans-switch-by-yor-apk
-          path: app/build/outputs/apk/debug/dead-mans-switch-by-yor.apk
+          path: app/build/outputs/apk/release/dead-mans-switch-by-yor.apk
           if-no-files-found: error

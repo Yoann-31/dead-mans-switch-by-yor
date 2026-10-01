@@ -41,6 +41,11 @@ configuré, par **e-mail (SMTP)** ou par **SMS**.
     ## YOR => Envoyé les prochaines modifications vers GitHub : 
     git push --force origin main
 
+    ## OU : 
+    git add .
+    git commit -m "Renommer l'APK en dead-mans-switch-by-yor.apk"
+    git push
+
 
 ## 1. Obtenir le fichier .apk
 
