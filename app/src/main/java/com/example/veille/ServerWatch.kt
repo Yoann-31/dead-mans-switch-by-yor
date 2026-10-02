@@ -2,8 +2,11 @@ package com.example.veille
 
 import android.content.Context
 import com.example.veille.Prefs.messageEmail
+import com.example.veille.Prefs.messageSms
 import com.example.veille.Prefs.recipientEmail
 import com.example.veille.Prefs.sendDelayMinutes
+import com.example.veille.Prefs.sendEmail
+import com.example.veille.Prefs.sendSms
 import com.example.veille.Prefs.serverDeviceId
 import com.example.veille.Prefs.serverEnabled
 import com.example.veille.Prefs.serverToken
@@ -30,6 +33,14 @@ object ServerWatch {
         if (!ctx.serverEnabled || ctx.serverUrl.isBlank()) return
         val fireAt = System.currentTimeMillis() + ctx.sendDelayMinutes * 60_000L + MARGIN_MS
         val pos = Locator.savedLink(ctx) ?: Locator.getLocationLink(ctx) ?: ""
+
+        // Cas serveur (Google) : l'e-mail d'alerte reprend le message SMS + le message e-mail.
+        // (L'envoi normal par le téléphone garde, lui, un message propre à chaque canal.)
+        val msgs = mutableListOf<String>()
+        if (ctx.sendSms && ctx.messageSms.isNotBlank()) msgs += ctx.messageSms
+        if (ctx.sendEmail && ctx.messageEmail.isNotBlank()) msgs += ctx.messageEmail
+        val combined = if (msgs.isEmpty()) ctx.messageEmail else msgs.joinToString("\n\n")
+
         val body = JSONObject().apply {
             put("token", ctx.serverToken)
             put("id", ctx.serverDeviceId)
@@ -38,7 +49,7 @@ object ServerWatch {
             put("fireAt", fireAt)
             put("to", ctx.recipientEmail)
             put("subject", ctx.subject)
-            put("message", ctx.messageEmail)
+            put("message", combined)
             put("position", pos)
         }
         post(ctx.serverUrl, body.toString())

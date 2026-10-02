@@ -53,7 +53,7 @@ configuré, par **e-mail (SMTP)** ou par **SMS**.
     git push
     ==> exemple : 
         git add .
-        git commit -m "App avec script google (v1.12)"
+        git commit -m "App avec script google  - MAJ (v13 - vName 2.2)"
         git push
 
 
