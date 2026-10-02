@@ -52,6 +52,6 @@ jobs:
       - name: Publier l'APK
         uses: actions/upload-artifact@v4
         with:
-          name: dead-mans-switch-by-yor-apk
-          path: app/build/outputs/apk/release/dead-mans-switch-by-yor.apk
+          name: YRO-apk
+          path: app/build/outputs/apk/release/YRO.apk
           if-no-files-found: error

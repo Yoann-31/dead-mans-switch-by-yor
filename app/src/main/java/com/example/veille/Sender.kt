@@ -4,7 +4,8 @@ import android.content.Context
 import android.net.Uri
 import android.telephony.SmsManager
 import com.example.veille.Prefs.attachGps
-import com.example.veille.Prefs.messageText
+import com.example.veille.Prefs.messageEmail
+import com.example.veille.Prefs.messageSms
 import com.example.veille.Prefs.photoUri
 import com.example.veille.Prefs.recipientEmail
 import com.example.veille.Prefs.recipientSms
@@ -40,22 +41,22 @@ object Sender {
             .map { it.trim() }
             .filter { it.isNotEmpty() }
 
-    private fun buildBody(ctx: Context): String {
-        // 1) tentative d'une position fraîche (max 15 s) ; 2) sinon position figée à la
-        // validation ; 3) sinon dernière position connue.
-        val gps = if (ctx.attachGps) {
-            Locator.getFreshLink(ctx, 15_000L)
-                ?: Locator.savedLink(ctx)
-                ?: Locator.getLocationLink(ctx)
-        } else null
-        return if (gps != null) ctx.messageText + "\n\nPosition : " + gps else ctx.messageText
+    /** Lien de position à joindre (fraîche, sinon validation, sinon dernière connue). */
+    private fun gpsLink(ctx: Context): String? {
+        if (!ctx.attachGps) return null
+        return Locator.getFreshLink(ctx, 15_000L)
+            ?: Locator.savedLink(ctx)
+            ?: Locator.getLocationLink(ctx)
     }
 
+    private fun withGps(message: String, gps: String?): String =
+        if (gps != null) message + "\n\nPosition : " + gps else message
+
     fun send(ctx: Context): String {
-        val body = buildBody(ctx)
+        val gps = gpsLink(ctx)
         val results = mutableListOf<String>()
-        if (ctx.sendSms) results += sendSms(ctx, body)
-        if (ctx.sendEmail) results += sendEmail(ctx, body)
+        if (ctx.sendSms) results += sendSms(ctx, withGps(ctx.messageSms, gps))
+        if (ctx.sendEmail) results += sendEmail(ctx, withGps(ctx.messageEmail, gps))
         if (results.isEmpty()) return "Aucun canal d'envoi activé."
         return results.joinToString("\n")
     }

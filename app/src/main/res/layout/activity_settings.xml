@@ -6,6 +6,7 @@
     android:fillViewport="true">
 
     <LinearLayout
+        android:id="@+id/contentRoot"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -20,7 +21,7 @@
             android:textStyle="bold"
             android:paddingBottom="8dp" />
 
-        <!-- Carte : canaux -->
+        <!-- ============ CARTE : CANAUX ============ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -56,9 +57,9 @@
                 android:layout_marginTop="6dp" />
         </LinearLayout>
 
-        <!-- Carte : SMS -->
+        <!-- ============ CARTE : SMS ============ -->
         <LinearLayout
-            android:id="@+id/smsBlock"
+            android:id="@+id/smsCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -66,116 +67,199 @@
             android:padding="16dp"
             android:layout_marginTop="12dp">
 
-            <TextView style="@style/Label" android:text="Destinataires SMS (séparés par des virgules)" android:paddingTop="0dp" />
-            <EditText android:id="@+id/recipientSms" style="@style/Field"
-                android:inputType="textMultiLine" android:minLines="1"
-                android:hint="+33612345678, +33698765432" />
-        </LinearLayout>
-
-        <!-- Carte : e-mail -->
-        <LinearLayout
-            android:id="@+id/emailBlock"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/card_bg"
-            android:padding="16dp"
-            android:layout_marginTop="12dp">
-
-            <TextView style="@style/Label" android:text="Destinataires e-mail (séparés par des virgules)" android:paddingTop="0dp" />
-            <EditText android:id="@+id/recipientEmail" style="@style/Field"
-                android:inputType="textMultiLine|textEmailAddress" android:minLines="1"
-                android:hint="a@exemple.com, b@exemple.com" />
-
-            <TextView style="@style/Label" android:text="Objet" />
-            <EditText android:id="@+id/subject" style="@style/Field"
-                android:inputType="text" android:hint="Objet du message" />
-
-            <LinearLayout
+            <LinearLayout android:id="@+id/smsHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="12dp">
-                <Button android:id="@+id/pickPhoto"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:text="Galerie" />
-                <Button android:id="@+id/takePhotoBtn"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="Appareil photo" />
-            </LinearLayout>
-            <TextView android:id="@+id/photoLabel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Aucune photo"
-                android:textColor="@color/text_muted"
-                android:textSize="12sp" />
-
-            <TextView style="@style/Label" android:text="Serveur SMTP" />
-            <EditText android:id="@+id/smtpHost" style="@style/Field"
-                android:inputType="textUri" android:text="smtp.gmail.com" />
-
-            <TextView style="@style/Label" android:text="Port SMTP (587 = TLS, 465 = SSL)" />
-            <EditText android:id="@+id/smtpPort" style="@style/Field"
-                android:inputType="number" android:text="587" />
-
-            <TextView style="@style/Label" android:text="Identifiant SMTP (votre e-mail)" />
-            <EditText android:id="@+id/smtpUser" style="@style/Field"
-                android:inputType="textEmailAddress" android:hint="vous@gmail.com" />
-
-            <TextView style="@style/Label" android:text="Mot de passe d'application SMTP" />
-            <EditText android:id="@+id/smtpPass" style="@style/Field"
-                android:inputType="textPassword" android:hint="mot de passe d'application" />
-        </LinearLayout>
-
-        <!-- Carte : contenu + minuterie -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/card_bg"
-            android:padding="16dp"
-            android:layout_marginTop="12dp">
-
-            <TextView style="@style/Label" android:text="Message (texte / lien)" android:paddingTop="0dp" />
-            <EditText android:id="@+id/messageText" style="@style/Field"
-                android:minLines="3" android:gravity="top"
-                android:inputType="textMultiLine" android:hint="Votre message, un lien, etc." />
-
-            <TextView style="@style/Label" android:text="Récurrence des notifications" />
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-                <EditText android:id="@+id/interval" style="@style/Field"
+                android:gravity="center_vertical"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+                <TextView
                     android:layout_width="0dp" android:layout_weight="1"
-                    android:inputType="number" android:text="1" />
-                <Spinner android:id="@+id/intervalUnit"
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:minWidth="120dp"
-                    android:layout_marginStart="8dp" />
+                    android:text="SMS"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="bold" android:textSize="16sp" />
+                <ImageView android:id="@+id/smsChevron"
+                    android:layout_width="24dp" android:layout_height="24dp"
+                    android:src="@drawable/ic_chevron"
+                    android:contentDescription="Replier/déplier" />
             </LinearLayout>
 
-            <TextView style="@style/Label" android:text="Temps d'absence avant envoi" />
-            <LinearLayout
+            <LinearLayout android:id="@+id/smsBody"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView style="@style/Label" android:text="Destinataires SMS (séparés par des virgules)" />
+                <EditText android:id="@+id/recipientSms" style="@style/Field"
+                    android:inputType="textMultiLine" android:minLines="1"
+                    android:hint="+33612345678, +33698765432" />
+
+                <TextView style="@style/Label" android:text="Message SMS" />
+                <EditText android:id="@+id/messageSms" style="@style/Field"
+                    android:minLines="3" android:gravity="top"
+                    android:inputType="textMultiLine" android:hint="Message envoyé par SMS" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ============ CARTE : E-MAIL ============ -->
+        <LinearLayout
+            android:id="@+id/emailCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/card_bg"
+            android:padding="16dp"
+            android:layout_marginTop="12dp">
+
+            <LinearLayout android:id="@+id/emailHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical">
-                <EditText android:id="@+id/sendDelay" style="@style/Field"
+                android:gravity="center_vertical"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+                <TextView
                     android:layout_width="0dp" android:layout_weight="1"
-                    android:inputType="number" android:text="24" />
-                <Spinner android:id="@+id/sendDelayUnit"
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:minWidth="120dp"
-                    android:layout_marginStart="8dp" />
+                    android:text="E-mail"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="bold" android:textSize="16sp" />
+                <ImageView android:id="@+id/emailChevron"
+                    android:layout_width="24dp" android:layout_height="24dp"
+                    android:src="@drawable/ic_chevron"
+                    android:contentDescription="Replier/déplier" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/emailBody"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView style="@style/Label" android:text="Destinataires e-mail (séparés par des virgules)" />
+                <EditText android:id="@+id/recipientEmail" style="@style/Field"
+                    android:inputType="textMultiLine|textEmailAddress" android:minLines="1"
+                    android:hint="a@exemple.com, b@exemple.com" />
+
+                <TextView style="@style/Label" android:text="Objet" />
+                <EditText android:id="@+id/subject" style="@style/Field"
+                    android:inputType="text" android:hint="Objet du message" />
+
+                <TextView style="@style/Label" android:text="Message e-mail" />
+                <EditText android:id="@+id/messageEmail" style="@style/Field"
+                    android:minLines="3" android:gravity="top"
+                    android:inputType="textMultiLine" android:hint="Message envoyé par e-mail" />
+
+                <TextView style="@style/Label" android:text="Photo (jointe à l'e-mail)" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <Button android:id="@+id/pickPhoto"
+                        android:layout_width="0dp" android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="Galerie" />
+                    <Button android:id="@+id/takePhotoBtn"
+                        android:layout_width="0dp" android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Appareil photo" />
+                </LinearLayout>
+                <TextView android:id="@+id/photoLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Aucune photo"
+                    android:textColor="@color/text_muted"
+                    android:textSize="12sp" />
+
+                <TextView style="@style/Label" android:text="Serveur SMTP" />
+                <EditText android:id="@+id/smtpHost" style="@style/Field"
+                    android:inputType="textUri" android:text="smtp.gmail.com" />
+
+                <TextView style="@style/Label" android:text="Port SMTP (587 = TLS, 465 = SSL)" />
+                <EditText android:id="@+id/smtpPort" style="@style/Field"
+                    android:inputType="number" android:text="587" />
+
+                <TextView style="@style/Label" android:text="Identifiant SMTP (votre e-mail)" />
+                <EditText android:id="@+id/smtpUser" style="@style/Field"
+                    android:inputType="textEmailAddress" android:hint="vous@gmail.com" />
+
+                <TextView style="@style/Label" android:text="Mot de passe d'application SMTP" />
+                <EditText android:id="@+id/smtpPass" style="@style/Field"
+                    android:inputType="textPassword" android:hint="mot de passe d'application" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ============ CARTE : MINUTERIE ============ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/card_bg"
+            android:padding="16dp"
+            android:layout_marginTop="12dp">
+
+            <LinearLayout android:id="@+id/timerHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+                <TextView
+                    android:layout_width="0dp" android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Minuterie"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="bold" android:textSize="16sp" />
+                <ImageView android:id="@+id/timerChevron"
+                    android:layout_width="24dp" android:layout_height="24dp"
+                    android:src="@drawable/ic_chevron"
+                    android:contentDescription="Replier/déplier" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/timerBody"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView style="@style/Label" android:text="Récurrence des notifications" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <EditText android:id="@+id/interval" style="@style/Field"
+                        android:layout_width="0dp" android:layout_weight="1"
+                        android:inputType="number" android:text="1" />
+                    <Spinner android:id="@+id/intervalUnit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minWidth="120dp"
+                        android:layout_marginStart="8dp"
+                        android:popupBackground="@color/card" />
+                </LinearLayout>
+
+                <TextView style="@style/Label" android:text="Temps d'absence avant envoi" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <EditText android:id="@+id/sendDelay" style="@style/Field"
+                        android:layout_width="0dp" android:layout_weight="1"
+                        android:inputType="number" android:text="24" />
+                    <Spinner android:id="@+id/sendDelayUnit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minWidth="120dp"
+                        android:layout_marginStart="8dp"
+                        android:popupBackground="@color/card" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
 

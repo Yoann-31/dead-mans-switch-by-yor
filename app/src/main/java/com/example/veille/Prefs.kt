@@ -94,10 +94,14 @@ object Prefs {
         get() = p(this).getString("recipientEmail", "") ?: ""
         set(v) { p(this).edit().putString("recipientEmail", v).apply() }
 
-    // --- Contenu ---
-    var Context.messageText: String
-        get() = p(this).getString("messageText", "") ?: ""
-        set(v) { p(this).edit().putString("messageText", v).apply() }
+    // --- Contenu : message spécifique par canal ---
+    var Context.messageSms: String
+        get() = p(this).getString("messageSms", "") ?: ""
+        set(v) { p(this).edit().putString("messageSms", v).apply() }
+
+    var Context.messageEmail: String
+        get() = p(this).getString("messageEmail", "") ?: ""
+        set(v) { p(this).edit().putString("messageEmail", v).apply() }
 
     var Context.subject: String
         get() = p(this).getString("subject", "Message important") ?: "Message important"

@@ -18,8 +18,8 @@ android {
         applicationId "com.example.veille"
         minSdk 26
         targetSdk 34
-        versionCode 7
-        versionName "1.6"
+        versionCode 9
+        versionName "1.8"
     }
 
     signingConfigs {
@@ -63,10 +63,10 @@ android {
         }
     }
 
-    // Nomme le fichier APK généré "dead-mans-switch-by-yor.apk"
+    // Nomme le fichier APK généré "YRO.apk"
     applicationVariants.all { variant ->
         variant.outputs.all { output ->
-            output.outputFileName = "dead-mans-switch-by-yor.apk"
+            output.outputFileName = "YRO.apk"
         }
     }
 }

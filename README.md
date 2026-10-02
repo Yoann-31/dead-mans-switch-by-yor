@@ -7,7 +7,9 @@ configuré, par **e-mail (SMTP)** ou par **SMS**.
 
 ---
 
+## ############################
 ## YOR => Première utilisation : 
+## ############################
 
 - Ouvrir le dossier dans VS Code.
 - Dans le terminal, taper : winget install EclipseAdoptium.Temurin.17.JDK
@@ -26,7 +28,9 @@ configuré, par **e-mail (SMTP)** ou par **SMS**.
 
 - Dossier de sortie pour l'APK : app/build/outputs/apk/debug/app-debug.apk
 
+  ## #####################################################
   ## YOR => Première utilisation : Compilation par GitHub : 
+  ## #####################################################
   - Sur GitHub : New repository → nom dead-mans-switch-by-yor → ne rien cocher → Create repository. Laissez la page ouverte (elle affiche l'URL du dépôt).
   - Dans le terminal VSCode (dans le dossier qui contient gradlew.bat), lancez les commandes, en remplaçant <VOTRE_COMPTE> : 
       git init
@@ -38,7 +42,9 @@ configuré, par **e-mail (SMTP)** ou par **SMS**.
   - L'onglet Actions compilera l'APK tout seul.
   - Après que le build ait réussi, en bas de la apge, l'APK est disponible pour être télépchargée.
 
+    ## #######################################################
     ## YOR => Envoyé les prochaines modifications vers GitHub : 
+    ## #######################################################
     git push --force origin main
 
     ## OU : 
@@ -51,10 +57,12 @@ configuré, par **e-mail (SMTP)** ou par **SMS**.
         git push
 
 
+      ## ############################
+      ## MOT DE PASSE (Key encodée) = dead-mans-switch-by-yor
+      ## ############################
 
-## MOT DE PASSE (Key encodée) = dead-mans-switch-by-yor
 
-
+## ##########################
 ## 1. Obtenir le fichier .apk
 
 Vous n'avez **rien à installer** sur votre ordinateur. GitHub compile l'APK pour vous.

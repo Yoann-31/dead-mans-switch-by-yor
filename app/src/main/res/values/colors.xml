@@ -3,7 +3,8 @@
     <color name="teal">#10B981</color>
     <color name="teal_dark">#059669</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="ic_launcher_background">#0F2A2E</color>
+    <color name="ic_launcher_background">#000000</color>
+    <color name="gold">#F5C518</color>
 
     <!-- Palette 2026 -->
     <color name="bg_dark">#0B1220</color>

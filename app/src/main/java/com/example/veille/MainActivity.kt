@@ -15,7 +15,8 @@ import androidx.core.content.ContextCompat
 import com.example.veille.Prefs.deadlineAt
 import com.example.veille.Prefs.enabled
 import com.example.veille.Prefs.lastStatus
-import com.example.veille.Prefs.messageText
+import com.example.veille.Prefs.messageEmail
+import com.example.veille.Prefs.messageSms
 import com.example.veille.Prefs.nextCheckInAt
 import com.example.veille.Prefs.recipientEmail
 import com.example.veille.Prefs.recipientSms
@@ -119,16 +120,12 @@ class MainActivity : AppCompatActivity() {
             openSettings("Activez au moins un canal (SMS ou e-mail) dans les réglages.")
             return false
         }
-        if (messageText.isBlank()) {
-            openSettings("Renseignez un message dans les réglages.")
+        if (sendSms && (recipientSms.isBlank() || messageSms.isBlank())) {
+            openSettings("Complétez le SMS (destinataire et message).")
             return false
         }
-        if (sendSms && recipientSms.isBlank()) {
-            openSettings("Renseignez le numéro du destinataire SMS.")
-            return false
-        }
-        if (sendEmail && (recipientEmail.isBlank() || smtpUser.isBlank())) {
-            openSettings("Complétez les informations e-mail (destinataire et SMTP).")
+        if (sendEmail && (recipientEmail.isBlank() || messageEmail.isBlank() || smtpUser.isBlank())) {
+            openSettings("Complétez l'e-mail (destinataire, message et SMTP).")
             return false
         }
         return true
