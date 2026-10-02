@@ -27,6 +27,9 @@ import com.example.veille.Prefs.sendDelayMinutes
 import com.example.veille.Prefs.sendDelayUnit
 import com.example.veille.Prefs.sendEmail
 import com.example.veille.Prefs.sendSms
+import com.example.veille.Prefs.serverEnabled
+import com.example.veille.Prefs.serverToken
+import com.example.veille.Prefs.serverUrl
 import com.example.veille.Prefs.smtpHost
 import com.example.veille.Prefs.smtpPass
 import com.example.veille.Prefs.smtpPort
@@ -80,6 +83,7 @@ class SettingsActivity : AppCompatActivity() {
         setupUnitSpinners()
         setupCollapse(b.smsHeader, b.smsBody, b.smsChevron)
         setupCollapse(b.emailHeader, b.emailBody, b.emailChevron)
+        setupCollapse(b.serverHeader, b.serverBody, b.serverChevron)
         setupCollapse(b.timerHeader, b.timerBody, b.timerChevron)
         loadIntoUi()
 
@@ -168,6 +172,9 @@ class SettingsActivity : AppCompatActivity() {
         b.smtpPort.setText(smtpPort.toString())
         b.smtpUser.setText(smtpUser)
         b.smtpPass.setText(smtpPass)
+        b.switchServer.isChecked = serverEnabled
+        b.serverUrl.setText(serverUrl)
+        b.serverToken.setText(serverToken)
         if (photoUri.isNotEmpty()) b.photoLabel.text = "Photo configurée"
     }
 
@@ -197,5 +204,9 @@ class SettingsActivity : AppCompatActivity() {
         smtpPort = b.smtpPort.text.toString().toIntOrNull() ?: 587
         smtpUser = b.smtpUser.text.toString().trim()
         smtpPass = b.smtpPass.text.toString()
+
+        serverEnabled = b.switchServer.isChecked
+        serverUrl = b.serverUrl.text.toString().trim()
+        serverToken = b.serverToken.text.toString().trim()
     }
 }

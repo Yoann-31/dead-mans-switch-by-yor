@@ -26,6 +26,8 @@ object Validator {
         if (ctx.enabled) {
             // Réinitialise le compte à rebours d'envoi et le prochain rappel (option A)
             Scheduler.onValidated(ctx)
+            // Signale la présence au filet serveur (repousse l'échéance côté serveur)
+            ServerWatch.checkin(ctx)
         }
     }
 }

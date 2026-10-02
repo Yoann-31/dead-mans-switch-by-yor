@@ -97,6 +97,7 @@ class MainActivity : AppCompatActivity() {
             enabled = false
             Scheduler.cancelAll(this)
             Notifications.cancelCheckIn(this)
+            ServerWatch.disarm(this)
             lastStatus = "Surveillance désactivée"
             refreshUi()
             return
@@ -111,6 +112,7 @@ class MainActivity : AppCompatActivity() {
 
         enabled = true
         Scheduler.start(this)
+        ServerWatch.checkin(this)
         lastStatus = "Surveillance activée"
         refreshUi()
     }

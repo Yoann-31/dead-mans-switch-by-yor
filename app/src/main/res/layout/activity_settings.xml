@@ -193,6 +193,66 @@
             </LinearLayout>
         </LinearLayout>
 
+        <!-- ============ CARTE : FILET SERVEUR ============ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/card_bg"
+            android:padding="16dp"
+            android:layout_marginTop="12dp">
+
+            <LinearLayout android:id="@+id/serverHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+                <TextView
+                    android:layout_width="0dp" android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Filet serveur (Google)"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="bold" android:textSize="16sp" />
+                <ImageView android:id="@+id/serverChevron"
+                    android:layout_width="24dp" android:layout_height="24dp"
+                    android:src="@drawable/ic_chevron"
+                    android:contentDescription="Replier/déplier" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/serverBody"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Envoie l'e-mail via Google même si le téléphone est éteint / verrouillé / sans SIM. Nécessite le script Apps Script (voir guide)."
+                    android:textColor="@color/text_muted"
+                    android:textSize="12sp"
+                    android:layout_marginTop="6dp" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchServer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Activer le filet serveur"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginTop="8dp" />
+
+                <TextView style="@style/Label" android:text="URL du script (…/exec)" />
+                <EditText android:id="@+id/serverUrl" style="@style/Field"
+                    android:inputType="textUri" android:hint="https://script.google.com/macros/s/.../exec" />
+
+                <TextView style="@style/Label" android:text="Jeton secret (identique au script)" />
+                <EditText android:id="@+id/serverToken" style="@style/Field"
+                    android:inputType="textPassword" android:hint="jeton secret" />
+            </LinearLayout>
+        </LinearLayout>
+
         <!-- ============ CARTE : MINUTERIE ============ -->
         <LinearLayout
             android:layout_width="match_parent"

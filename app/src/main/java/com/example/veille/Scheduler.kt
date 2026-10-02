@@ -22,8 +22,10 @@ object Scheduler {
     private const val REQ_CHECKIN = 1001
     private const val REQ_DEADLINE = 1002
     private const val REQ_PRETRACK = 1003
+    private const val REQ_RETRY = 1004
 
     private const val PRE_TRACK_MINUTES = 10L
+    private const val RETRY_INTERVAL_MS = 120_000L // ré-essai toutes les 2 min
 
     private fun am(ctx: Context) =
         ctx.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -50,6 +52,19 @@ object Scheduler {
             ctx, REQ_PRETRACK, i,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
+    }
+
+    private fun retryPI(ctx: Context): PendingIntent {
+        val i = Intent(ctx, RetryReceiver::class.java)
+        return PendingIntent.getBroadcast(
+            ctx, REQ_RETRY, i,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+
+    /** Reprogramme une tentative d'envoi dans 2 min (quand un canal attend la connexion). */
+    fun scheduleRetry(ctx: Context) {
+        setExact(ctx, System.currentTimeMillis() + RETRY_INTERVAL_MS, retryPI(ctx))
     }
 
     fun canScheduleExact(ctx: Context): Boolean {
@@ -110,6 +125,7 @@ object Scheduler {
         am(ctx).cancel(checkInPI(ctx))
         am(ctx).cancel(deadlinePI(ctx))
         am(ctx).cancel(preTrackPI(ctx))
+        am(ctx).cancel(retryPI(ctx))
         LocationTrackingService.stop(ctx)
         ctx.awaitingValidation = false
     }

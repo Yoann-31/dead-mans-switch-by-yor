@@ -30,40 +30,42 @@ import javax.mail.internet.MimeMultipart
 import javax.mail.util.ByteArrayDataSource
 
 /**
- * Envoi sur les canaux activés (SMS et/ou e-mail), avec destinataires
- * multiples et, en option, la position GPS jointe au message.
+ * Envoi par canal. Chaque fonction renvoie un résultat (ok + message) pour que
+ * l'appelant (SendService) sache quoi re-essayer.
  */
 object Sender {
 
-    /** Découpe une saisie en plusieurs destinataires (séparés par , ; ou retour ligne). */
+    data class Res(val ok: Boolean, val msg: String)
+
     private fun parseRecipients(raw: String): List<String> =
         raw.split(Regex("[,;\\n\\r]"))
             .map { it.trim() }
             .filter { it.isNotEmpty() }
 
-    /** Lien de position à joindre (fraîche, sinon validation, sinon dernière connue). */
-    private fun gpsLink(ctx: Context): String? {
+    /** Lien de position (fraîche → validation → dernière connue). */
+    fun gpsLink(ctx: Context): String? {
         if (!ctx.attachGps) return null
         return Locator.getFreshLink(ctx, 15_000L)
             ?: Locator.savedLink(ctx)
             ?: Locator.getLocationLink(ctx)
     }
 
-    private fun withGps(message: String, gps: String?): String =
+    fun withGps(message: String, gps: String?): String =
         if (gps != null) message + "\n\nPosition : " + gps else message
 
+    /** Envoi immédiat des deux canaux (utilisé par le bouton « Tester l'envoi »). */
     fun send(ctx: Context): String {
         val gps = gpsLink(ctx)
         val results = mutableListOf<String>()
-        if (ctx.sendSms) results += sendSms(ctx, withGps(ctx.messageSms, gps))
-        if (ctx.sendEmail) results += sendEmail(ctx, withGps(ctx.messageEmail, gps))
+        if (ctx.sendSms) results += sendSms(ctx, withGps(ctx.messageSms, gps)).msg
+        if (ctx.sendEmail) results += sendEmail(ctx, withGps(ctx.messageEmail, gps)).msg
         if (results.isEmpty()) return "Aucun canal d'envoi activé."
         return results.joinToString("\n")
     }
 
-    private fun sendSms(ctx: Context, body: String): String {
+    fun sendSms(ctx: Context, body: String): Res {
         val tos = parseRecipients(ctx.recipientSms)
-        if (tos.isEmpty()) return "SMS : aucun numéro de destinataire."
+        if (tos.isEmpty()) return Res(false, "SMS : aucun numéro de destinataire.")
         return try {
             val sms = if (android.os.Build.VERSION.SDK_INT >= 31) {
                 ctx.getSystemService(SmsManager::class.java)
@@ -71,33 +73,25 @@ object Sender {
                 @Suppress("DEPRECATION")
                 SmsManager.getDefault()
             }
-            var ok = 0
-            val errors = mutableListOf<String>()
             for (to in tos) {
-                try {
-                    val parts = sms.divideMessage(body)
-                    sms.sendMultipartTextMessage(to, null, parts, null, null)
-                    ok++
-                } catch (e: Exception) {
-                    errors.add("$to (${e.message})")
-                }
+                val parts = sms.divideMessage(body)
+                sms.sendMultipartTextMessage(to, null, parts, null, null)
             }
-            val base = "SMS envoyé à $ok/${tos.size} destinataire(s)"
-            if (errors.isEmpty()) base else "$base — échecs : ${errors.joinToString(", ")}"
+            Res(true, "SMS envoyé à ${tos.size} destinataire(s)")
         } catch (e: Exception) {
-            "Échec SMS : ${e.message}"
+            Res(false, "Échec SMS : ${e.message}")
         }
     }
 
-    private fun sendEmail(ctx: Context, body: String): String {
+    fun sendEmail(ctx: Context, body: String): Res {
         val tos = parseRecipients(ctx.recipientEmail)
-        if (tos.isEmpty()) return "E-mail : aucune adresse destinataire."
+        if (tos.isEmpty()) return Res(false, "E-mail : aucune adresse destinataire.")
         val user = ctx.smtpUser.trim()
         val pass = ctx.smtpPass
         val host = ctx.smtpHost.trim()
         val port = ctx.smtpPort
         if (user.isEmpty() || pass.isEmpty() || host.isEmpty()) {
-            return "E-mail : paramètres SMTP incomplets."
+            return Res(false, "E-mail : paramètres SMTP incomplets.")
         }
 
         return try {
@@ -121,9 +115,7 @@ object Sender {
 
             val msg = MimeMessage(session).apply {
                 setFrom(InternetAddress(user))
-                for (to in tos) {
-                    addRecipient(Message.RecipientType.TO, InternetAddress(to))
-                }
+                for (to in tos) addRecipient(Message.RecipientType.TO, InternetAddress(to))
                 subject = ctx.subject
             }
 
@@ -148,9 +140,9 @@ object Sender {
 
             msg.setContent(multipart)
             Transport.send(msg)
-            "E-mail envoyé à ${tos.size} destinataire(s)"
+            Res(true, "E-mail envoyé à ${tos.size} destinataire(s)")
         } catch (e: Exception) {
-            "Échec e-mail : ${e.message}"
+            Res(false, "Échec e-mail : ${e.message}")
         }
     }
 }

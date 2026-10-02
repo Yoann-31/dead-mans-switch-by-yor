@@ -8,26 +8,15 @@ import androidx.core.content.ContextCompat
 import com.example.veille.Prefs.enabled
 import com.example.veille.Prefs.pendingEmail
 import com.example.veille.Prefs.pendingSms
-import com.example.veille.Prefs.retryCount
-import com.example.veille.Prefs.sendEmail
-import com.example.veille.Prefs.sendSms
 
 /**
- * Se déclenche quand le temps d'absence est écoulé sans validation :
- * initialise les canaux à envoyer, arrête le suivi GPS et lance l'envoi
- * (qui réessaiera jusqu'à ce que la connexion soit disponible).
+ * Relance une tentative d'envoi (toutes les 2 min) tant qu'un canal est en attente
+ * de connexion. Déclenché par l'alarme programmée dans SendService via Scheduler.
  */
-class DeadlineReceiver : BroadcastReceiver() {
+class RetryReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
         if (!context.enabled) return
-
-        Notifications.cancelCheckIn(context)
-        LocationTrackingService.stop(context)
-
-        // Canaux à envoyer selon la configuration
-        context.pendingSms = context.sendSms
-        context.pendingEmail = context.sendEmail
-        context.retryCount = 0
+        if (!context.pendingSms && !context.pendingEmail) return
 
         val svc = Intent(context, SendService::class.java)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

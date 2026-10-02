@@ -85,6 +85,30 @@ object Prefs {
         get() = p(this).getBoolean("attachGps", true)
         set(v) { p(this).edit().putBoolean("attachGps", v).apply() }
 
+    // --- Filet serveur (Google Apps Script) ---
+    var Context.serverEnabled: Boolean
+        get() = p(this).getBoolean("serverEnabled", false)
+        set(v) { p(this).edit().putBoolean("serverEnabled", v).apply() }
+
+    var Context.serverUrl: String
+        get() = p(this).getString("serverUrl", "") ?: ""
+        set(v) { p(this).edit().putString("serverUrl", v).apply() }
+
+    var Context.serverToken: String
+        get() = p(this).getString("serverToken", "") ?: ""
+        set(v) { p(this).edit().putString("serverToken", v).apply() }
+
+    // Identifiant unique de cette installation (généré une fois) : permet à un même
+    // compte/script Google de suivre plusieurs téléphones/applications séparément.
+    val Context.serverDeviceId: String
+        get() {
+            val cur = p(this).getString("serverDeviceId", "") ?: ""
+            if (cur.isNotEmpty()) return cur
+            val id = java.util.UUID.randomUUID().toString()
+            p(this).edit().putString("serverDeviceId", id).apply()
+            return id
+        }
+
     // --- Destinataires ---
     var Context.recipientSms: String
         get() = p(this).getString("recipientSms", "") ?: ""
@@ -148,6 +172,19 @@ object Prefs {
     var Context.lastStatus: String
         get() = p(this).getString("lastStatus", "") ?: ""
         set(v) { p(this).edit().putString("lastStatus", v).apply() }
+
+    // --- Envoi en attente (ré-essai jusqu'à ce que la connexion soit dispo) ---
+    var Context.pendingSms: Boolean
+        get() = p(this).getBoolean("pendingSms", false)
+        set(v) { p(this).edit().putBoolean("pendingSms", v).apply() }
+
+    var Context.pendingEmail: Boolean
+        get() = p(this).getBoolean("pendingEmail", false)
+        set(v) { p(this).edit().putBoolean("pendingEmail", v).apply() }
+
+    var Context.retryCount: Int
+        get() = p(this).getInt("retryCount", 0)
+        set(v) { p(this).edit().putInt("retryCount", v).apply() }
 
     // Dernière position enregistrée lors d'une validation de présence
     var Context.savedLat: String
